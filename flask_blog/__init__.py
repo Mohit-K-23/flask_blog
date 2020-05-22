@@ -1,0 +1,31 @@
+
+import os
+from flask import Flask
+
+def create_app(test_config = None):
+    #Creating and configure app
+    app  = Flask(__name__,instance_relative_config = None)
+    app.config.from_mapping(
+        SECRET_KEY = 'dev',
+        DATABASE = os.path.join(app.instance_path, 'flask_blog.sqlite'),
+    )
+
+    if test_config is None:
+        #load the instance config and if it exists whe not testing
+        app.config.from_pyfile('config.py',silent=True)
+    else:
+        #load the test config if passed in
+        app.config.from_mapping(test_config)
+
+    #insure the instance folder
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
+    # A simple page says hello
+    @app.route('/')
+    def hello():
+        return 'Hello World'
+
+    return app
